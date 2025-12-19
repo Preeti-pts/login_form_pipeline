@@ -1,0 +1,27 @@
+pipeline {
+    agent any
+
+    stages {
+        stage('Clone Repo') {
+            steps {
+                git 'https://github.com/yourusername/login-app.git'
+            }
+        }
+
+        stage('Build Docker Image') {
+            steps {
+                sh 'docker build -t login-app .'
+            }
+        }
+
+        stage('Run Docker Container') {
+            steps {
+                sh '''
+                docker stop login-app || true
+                docker rm login-app || true
+                docker run -d --name login-app -p 5000:80 login-app
+                '''
+            }
+        }
+    }
+}
